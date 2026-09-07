@@ -1,7 +1,13 @@
+// localStorage에 저장된 골드가 있으면 가져오고, 없으면 기본값 20000G 적용
+function getSavedGold(pIdx, defaultGold = 20000) {
+    const saved = localStorage.getItem(`player_gold_${pIdx}`);
+    return saved !== null ? parseInt(saved, 10) : defaultGold;
+}
+
 let players = [
-    { name: "나", values: [1,1,1,1,1], held: [false,false,false,false,false], rankInfo: null, gold: 20000 },
-    { name: "컴퓨터1", values: [1,1,1,1,1], held: [false,false,false,false,false], rankInfo: null, gold: 20000 },
-    { name: "컴퓨터2", values: [1,1,1,1,1], held: [false,false,false,false,false], rankInfo: null, gold: 20000 }
+    { name: "나", values: [1,1,1,1,1], held: [false,false,false,false,false], rankInfo: null, gold: getSavedGold(0) },
+    { name: "컴퓨터1", values: [1,1,1,1,1], held: [false,false,false,false,false], rankInfo: null, gold: getSavedGold(1) },
+    { name: "컴퓨터2", values: [1,1,1,1,1], held: [false,false,false,false,false], rankInfo: null, gold: getSavedGold(2) }
 ];
 
 let rollCount = 0; // 0: 시작전, 1: 1차완료, 2: 2차완료, 3: 3차완료
@@ -22,7 +28,7 @@ async function playTurn() {
         let bet = parseInt(betInput.value);
 
         if (isNaN(bet) || bet < 100) bet = 100;
-        if (bet > 500) bet = 500;
+        if (bet > 1000) bet = 1000;
         betInput.value = bet;
         currentBet = bet;
 
@@ -225,7 +231,10 @@ function determineWinner() {
 
 function updateGoldUI() {
     for (let i = 0; i < 3; i++) {
+        // 화면 표기 업데이트
         document.getElementById(`p${i}-gold`).innerText = players[i].gold;
+        // 브라우저에 소지금 데이터 저장
+        localStorage.setItem(`player_gold_${i}`, players[i].gold);
     }
 }
 
