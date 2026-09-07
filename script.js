@@ -17,7 +17,6 @@ function toggleGuide() {
 async function playTurn() {
     if (isRolling || rollCount >= 3) return;
 
-    // 첫 번째 굴림 시작 시 배팅 처리
     if (rollCount === 0) {
         const betInput = document.getElementById('bet-input');
         let bet = parseInt(betInput.value);
@@ -46,7 +45,6 @@ async function playTurn() {
     isRolling = true;
     document.getElementById('roll-btn').disabled = true;
 
-    // AI 홀드 결정 (2차, 3차 굴림 전)
     if (rollCount > 0) {
         aiHoldDecision(1);
         aiHoldDecision(2);
@@ -84,9 +82,7 @@ function animateDiceRoll() {
                     const cubeEl = document.getElementById(`p${pIdx}-d${i}`);
                     const randomClass = rollClasses[Math.floor(Math.random() * rollClasses.length)];
                     
-                    // 기존 애니메이션 클래스 제거 후 새로 추가
                     cubeEl.classList.remove('roll-type-A', 'roll-type-B');
-                    // 브라우저 렌더링 강제 갱신(Reflow)으로 애니메이션 재실행 보장
                     void cubeEl.offsetWidth; 
                     cubeEl.classList.add(randomClass);
                 }
@@ -101,29 +97,28 @@ function animateDiceRoll() {
 }
 
 function finalizeRoll() {
+    // 주사위 6개 면에 대한 정방향 3D 절대 회전 좌표 (X, Y 조합 정밀 수정)
+    const rotMap = {
+        1: 'rotateX(0deg) rotateY(0deg)',
+        2: 'rotateX(0deg) rotateY(-90deg)',
+        3: 'rotateX(-90deg) rotateY(0deg)',
+        4: 'rotateX(90deg) rotateY(0deg)',
+        5: 'rotateX(0deg) rotateY(90deg)',
+        6: 'rotateX(180deg) rotateY(0deg)'
+    };
+
     for (let pIdx = 0; pIdx < 3; pIdx++) {
         const p = players[pIdx];
 
         for (let i = 0; i < 5; i++) {
             const cubeEl = document.getElementById(`p${pIdx}-d${i}`);
-            
-            // 애니메이션 클래스 안전하게 제거
             cubeEl.classList.remove('roll-type-A', 'roll-type-B');
 
             if (!p.held[i]) {
                 p.values[i] = Math.floor(Math.random() * 6) + 1;
             }
 
-            // 기존 rotMap을 아래 각도로 수정하여 실제 눈금 위치와 일치시킵니다.
-const rotMap = {
-    1: 'rotateX(0deg) rotateY(0deg)',
-    2: 'rotateY(-90deg)',
-    3: 'rotateX(-90deg)',
-    4: 'rotateX(90deg)',
-    5: 'rotateY(90deg)',
-    6: 'rotateX(180deg)'
-};
-            
+            // 정확한 주사위 눈금 정렬 매핑
             cubeEl.style.transform = rotMap[p.values[i]];
         }
 
@@ -149,7 +144,6 @@ function aiHoldDecision(pIdx) {
     }
 }
 
-// 홀드 토글 기능 (1차 또는 2차 굴림이 끝난 상태에서만 가능)
 function toggleHold(index) {
     if (rollCount === 0 || rollCount === 3 || isRolling) return;
 
@@ -163,51 +157,39 @@ function toggleHold(index) {
     }
 }
 
-// ------------------------------------------------------------------
-// [정밀 보정된 족보 및 점수 계산 함수]
-// 기존 소스 구조를 100% 보존하면서 정밀 타이 브레이크(Kicker) 가중치 부여
-// ------------------------------------------------------------------
 function evaluateHand(dice) {
     const counts = {};
     dice.forEach(num => { counts[num] = (counts[num] || 0) + 1; });
 
     const entries = Object.entries(counts).map(([num, count]) => ({ num: Number(num), count }));
-    // 개수 내림차순, 같으면 주사위 숫자 내림차순 정렬
     entries.sort((a, b) => b.count - a.count || b.num - a.num);
 
     const sum = dice.reduce((a, b) => a + b, 0);
 
-    // 5개 일치
     if (entries[0].count === 5) {
         return { name: "파이브 다이스", score: 70000 + entries[0].num };
     }
-    // 4개 일치
     if (entries[0].count === 4) {
         const kicker = entries[1].num;
         return { name: "포 다이스", score: 60000 + (entries[0].num * 10) + kicker };
     }
-    // 풀 하우스 (3개 + 2개)
     if (entries[0].count === 3 && entries[1].count === 2) {
         return { name: "풀 하우스", score: 50000 + (entries[0].num * 10) + entries[1].num };
     }
-    // 쓰리 다이스 (3개)
     if (entries[0].count === 3) {
         const kickersSum = entries.slice(1).reduce((acc, cur) => acc + (cur.num * cur.count), 0);
         return { name: "쓰리 다이스", score: 40000 + (entries[0].num * 100) + kickersSum };
     }
-    // 투 페어 (2개 + 2개)
     if (entries[0].count === 2 && entries[1].count === 2) {
         const highPair = Math.max(entries[0].num, entries[1].num);
         const lowPair = Math.min(entries[0].num, entries[1].num);
         const kicker = entries[2].num;
         return { name: "투 페어", score: 30000 + (highPair * 100) + (lowPair * 10) + kicker };
     }
-    // 원 페어 (2개)
     if (entries[0].count === 2) {
         const kickersSum = entries.slice(1).reduce((acc, cur) => acc + (cur.num * cur.count), 0);
         return { name: "원 페어", score: 20000 + (entries[0].num * 100) + kickersSum };
     }
-    // 노 페어
     return { name: "노 페어", score: 10000 + sum };
 }
 
