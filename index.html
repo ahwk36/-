@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>3D 포커 주사위 게임</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <h1>🎲 3D 포커 주사위 게임</h1>
+
+        <!-- 게임 방법 토글 버튼 & 가이드 영역 -->
+        <button id="guide-toggle-btn" onclick="toggleGuide()">📖 게임 방법 및 족보 보기</button>
+        <div id="guide-panel" class="guide-panel hidden">
+            <div class="guide-content">
+                <h3>🎮 게임 규칙 & 홀드 안내</h3>
+                <ul>
+                    <li>각 라운드 시작 시 배팅금을 정하고 주사위를 굴립니다.</li>
+                    <li>주사위는 **총 3번**까지 굴릴 수 있습니다.</li>
+                    <li><strong>홀드(HOLD) 방법:</strong> 주사위를 클릭하면 <span class="highlight-red">HOLD</span> 표시가 뜨며 다음 굴림 시 유지됩니다.</li>
+                </ul>
+                <h3>🏆 주사위 포커 족보 (높은 순)</h3>
+                <ol>
+                    <li><strong>파이브 다이스:</strong> 같은 숫자 5개</li>
+                    <li><strong>포 다이스:</strong> 같은 숫자 4개</li>
+                    <li><strong>풀 하우스:</strong> 같은 숫자 3개 + 같은 숫자 2개</li>
+                    <li><strong>쓰리 다이스:</strong> 같은 숫자 3개</li>
+                    <li><strong>투 페어:</strong> 같은 숫자 2개쌍 (2개 + 2개)</li>
+                    <li><strong>원 페어:</strong> 같은 숫자 2개</li>
+                    <li><strong>노 페어:</strong> 족보 없음 (주사위 눈의 합으로 승부)</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- 판돈 및 배팅 영역 -->
+        <div class="betting-board">
+            <div class="pot-info">
+                💰 총 판돈: <strong id="total-pot">0</strong> G
+            </div>
+            <div class="bet-controls">
+                <label for="bet-input">판당 배팅금: </label>
+                <input type="number" id="bet-input" min="100" max="500" step="50" value="100"> G
+            </div>
+        </div>
+
+        <div class="status-panel">
+            <span id="reroll-count">주사위를 굴려 시작하세요!</span>
+        </div>
+
+        <!-- 플레이어 카드 영역 -->
+        <div class="players-area">
+            <!-- 나 (플레이어 0) -->
+            <div class="player-card" id="player-card-0">
+                <div class="player-header">
+                    <h2>나</h2>
+                    <span class="gold-text"><span id="p0-gold">20000</span>G</span>
+                </div>
+                <div class="dice-container" id="p0-dice">
+                    <div class="dice-wrapper" onclick="toggleHold(0)">
+                        <div class="scene"><div class="cube" id="p0-d0"><div class="face f1"><span class="dot p1"></span></div><div class="face f2"><span class="dot p1"></span><span class="dot p2"></span></div><div class="face f3"><span class="dot p1"></span><span class="dot p2"></span><span class="dot p3"></span></div><div class="face f4"><span class="dot p1"></span><span class="dot p2"></span><span class="dot p3"></span><span class="dot p4"></span></div><div class="face f5"><span class="dot p1"></span><span class="dot p2"></span><span class="dot p3"></span><span class="dot p4"></span><span class="dot p5"></span></div><div class="face f6"><span class="dot p1"></span><span class="dot p2"></span><span class="dot p3"></span><span class="dot p4"></span><span class="dot p5"></span><span class="dot p6"></span></div></div></div>
+                        <span class="hold-tag">HOLD</span>
+                    </div>
+                    <div class="dice-wrapper" onclick="toggleHold(1)">
+                        <div class="scene"><div class="cube" id="p0-d1"><div class="face f1"><span class="dot p1"></span></div><div class="face f2"><span class="dot p1"></span><span class="dot p2"></span></div><div class="face f3"><span class="dot p1"></span><span class="dot p2"></span><span class="dot p3"></span></div><div class="face f4"><span class="dot p1"></span><span class="dot p2"></span><span class="dot p3"></span><span class="dot p4"></span></div><div class="face f5"><span class="dot p1"></span><span class="dot p2"></span><span class="dot p3"></span><span class="dot p4"></span><span class="dot p5"></span></div><div class="face f6"><span class="dot p1"></span><span class="dot p2"></span><span class="dot p3"></span><span class="dot p4"></span><span class="dot p5"></span><span class="dot p6"></span></div></div></div>
+                        <span class="hold-tag">HOLD</span>
+                    </div>
+                    <div class="dice-wrapper" onclick="toggleHold(2)">
+                        <div class="scene"><div class="cube" id="p0-d2"><div class="face f1"><span class="dot p1"></span></div><div class="face f2"><span class="dot p1"></span><span class="dot p2"></span></div><div class="face f3"><span class="dot p1"></span><span class="dot p2"></span><span class="dot p3"></span></div><div class="face f4"><span class="dot p1"></span><span class="dot p2"></span><span class="dot p3"></span><span class="dot p4"></span></div><div class="face f5"><span class="dot p1"></span><span class="dot p2"></span><span class="dot p3"></span><span class="dot p4"></span><span class="dot p5"></span></div><div class="face f6"><span class="dot p1"></span><span class="dot p2"></span><span class="dot p3"></span><span class="dot p4"></span><span class="dot p5"></span><span class="dot p6"></span></div></div></div>
+                        <span class="hold-tag">HOLD</span>
+                    </div>
+                    <div class="dice-wrapper" onclick="toggleHold(3)">
+                        <div class="scene"><div class="cube" id="p0-d3"><div class="face f1"><span class="dot p1"></span></div><div class="face f2"><span class="dot p1"></span><span class="dot p2"></span></div><div class="face f3"><span class="dot p1"></span><span class="dot p2"></span><span class="dot p3"></span></div><div class="face f4"><span class="dot p1"></span><span class="dot p2"></span><span class="dot p3"></span><span class="dot p4"></span></div><div class="face f5"><span class="dot p1"></span><span class="dot p2"></span><span class="dot p3"></span><span class="dot p4"></span><span class="dot p5"></span></div><div class="face f6"><span class="dot p1"></span><span class="dot p2"></span><span class="dot p3"></span><span class="dot p4"></span><span class="dot p5"></span><span class="dot p6"></span></div></div></div>
+                        <span class="hold-tag">HOLD</span>
+                    </div>
+                    <div class="dice-wrapper" onclick="toggleHold(4)">
+                        <div class="scene"><div class="cube" id="p0-d4"><div class="face f1"><span class="dot p1"></span></div><div class="face f2"><span class="dot p1"></span><span class="dot p2"></span></div><div class="face f3"><span class="dot p1"></span><span class="dot p2"></span><span class="dot p3"></span></div><div class="face f4"><span class="dot p1"></span><span class="dot p2"></span><span class="dot p3"></span><span class="dot p4"></span></div><div class="face f5"><span class="dot p1"></span><span class="dot p2"></span><span class="dot p3"></span><span class="dot p4"></span><span class="dot p5"></span></div><div class="face f6"><span class="dot p1"></span><span class="dot p2"></span><span class="dot p3"></span><span class="dot p4"></span><span class="dot p5"></span><span class="dot p6"></span></div></div></div>
+                        <span class="hold-tag">HOLD</span>
+                    </div>
+                </div>
+                <div class="rank-result"><span id="p0-rank">-</span> (합: <span id="p0-sum">0</span>)</div>
+            </div>
+
+            <!-- 컴퓨터 1 -->
+            <div class="player-card" id="player-card-1">
+                <div class="player-header">
+                    <h2>컴퓨터 1</h2>
+                    <span class="gold-text"><span id="p1-gold">20000</span>G</span>
+                </div>
+                <div class="dice-container" id="p1-dice">
+                    <div class="dice-wrapper">
+                        <div class="scene"><div class="cube" id="p1-d0"><div class="face f1"><span class="dot p1"></span></div><div class="face f2"><span class="dot p1"></span><span class="dot p2"></span></div><div class="face f3"><span class="dot p1"></span><span class="dot p2"></span><span class="dot p3"></span></div><div class="face f4"><span class="dot p1"></span><span class="dot p2"></span><span class="dot p3"></span><span class="dot p4"></span></div><div class="face f5"><span class="dot p1"></span><span class="dot p2"></span><span class="dot p3"></span><span class="dot p4"></span><span class="dot p5"></span></div><div class="face f6"><span class="dot p1"></span><span class="dot p2"></span><span class="dot p3"></span><span class="dot p4"></span><span class="dot p5"></span><span class="dot p6"></span></div></div></div>
+                        <span class="hold-tag">HOLD</span>
+                    </div>
+                    <div class="dice-wrapper">
+                        <div class="scene"><div class="cube" id="p1-d1"><div class="face f1"><span class="dot p1"></span></div><div class="face f2"><span class="dot p1"></span><span class="dot p2"></span></div><div class="face f3"><span class="dot p1"></span><span class="dot p2"></span><span class="dot p3"></span></div><div class="face f4"><span class="dot p1"></span><span class="dot p2"></span><span class="dot p3"></span><span class="dot p4"></span></div><div class="face f5"><span class="dot p1"></span><span class="dot p2"></span><span class="dot p3"></span><span class="dot p4"></span><span class="dot p5"></span></div><div class="face f6"><span class="dot p1"></span><span class="dot p2"></span><span class="dot p3"></span><span class="dot p4"></span><span class="dot p5"></span><span class="dot p6"></span></div></div></div>
+                        <span class="hold-tag">HOLD</span>
+                    </div>
+                    <div class="dice-wrapper">
+                        <div class="scene"><div class="cube" id="p1-d2"><div class="face f1"><span class="dot p1"></span></div><div class="face f2"><span class="dot p1"></span><span class="dot p2"></span></div><div class="face f3"><span class="dot p1"></span><span class="dot p2"></span><span class="dot p3"></span></div><div class="face f4"><span class="dot p1"></span><span class="dot p2"></span><span class="dot p3"></span><span class="dot p4"></span></div><div class="face f5"><span class="dot p1"></span><span class="dot p2"></span><span class="dot p3"></span><span class="dot p4"></span><span class="dot p5"></span></div><div class="face f6"><span class="dot p1"></span><span class="dot p2"></span><span class="dot p3"></span><span class="dot p4"></span><span class="dot p5"></span><span class="dot p6"></span></div></div></div>
+                        <span class="hold-tag">HOLD</span>
+                    </div>
+                    <div class="dice-wrapper">
+                        <div class="scene"><div class="cube" id="p1-d3"><div class="face f1"><span class="dot p1"></span></div><div class="face f2"><span class="dot p1"></span><span class="dot p2"></span></div><div class="face f3"><span class="dot p1"></span><span class="dot p2"></span><span class="dot p3"></span></div><div class="face f4"><span class="dot p1"></span><span class="dot p2"></span><span class="dot p3"></span><span class="dot p4"></span></div><div class="face f5"><span class="dot p1"></span><span class="dot p2"></span><span class="dot p3"></span><span class="dot p4"></span><span class="dot p5"></span></div><div class="face f6"><span class="dot p1"></span><span class="dot p2"></span><span class="dot p3"></span><span class="dot p4"></span><span class="dot p5"></span><span class="dot p6"></span></div></div></div>
+                        <span class="hold-tag">HOLD</span>
+                    </div>
+                    <div class="dice-wrapper">
+                        <div class="scene"><div class="cube" id="p1-d4"><div class="face f1"><span class="dot p1"></span></div><div class="face f2"><span class="dot p1"></span><span class="dot p2"></span></div><div class="face f3"><span class="dot p1"></span><span class="dot p2"></span><span class="dot p3"></span></div><div class="face f4"><span class="dot p1"></span><span class="dot p2"></span><span class="dot p3"></span><span class="dot p4"></span></div><div class="face f5"><span class="dot p1"></span><span class="dot p2"></span><span class="dot p3"></span><span class="dot p4"></span><span class="dot p5"></span></div><div class="face f6"><span class="dot p1"></span><span class="dot p2"></span><span class="dot p3"></span><span class="dot p4"></span><span class="dot p5"></span><span class="dot p6"></span></div></div></div>
+                        <span class="hold-tag">HOLD</span>
+                    </div>
+                </div>
+                <div class="rank-result"><span id="p1-rank">-</span> (합: <span id="p1-sum">0</span>)</div>
+            </div>
+
+            <!-- 컴퓨터 2 -->
+            <div class="player-card" id="player-card-2">
+                <div class="player-header">
+                    <h2>컴퓨터 2</h2>
+                    <span class="gold-text"><span id="p2-gold">20000</span>G</span>
+                </div>
+                <div class="dice-container" id="p2-dice">
+                    <div class="dice-wrapper">
+                        <div class="scene"><div class="cube" id="p2-d0"><div class="face f1"><span class="dot p1"></span></div><div class="face f2"><span class="dot p1"></span><span class="dot p2"></span></div><div class="face f3"><span class="dot p1"></span><span class="dot p2"></span><span class="dot p3"></span></div><div class="face f4"><span class="dot p1"></span><span class="dot p2"></span><span class="dot p3"></span><span class="dot p4"></span></div><div class="face f5"><span class="dot p1"></span><span class="dot p2"></span><span class="dot p3"></span><span class="dot p4"></span><span class="dot p5"></span></div><div class="face f6"><span class="dot p1"></span><span class="dot p2"></span><span class="dot p3"></span><span class="dot p4"></span><span class="dot p5"></span><span class="dot p6"></span></div></div></div>
+                        <span class="hold-tag">HOLD</span>
+                    </div>
+                    <div class="dice-wrapper">
+                        <div class="scene"><div class="cube" id="p2-d1"><div class="face f1"><span class="dot p1"></span></div><div class="face f2"><span class="dot p1"></span><span class="dot p2"></span></div><div class="face f3"><span class="dot p1"></span><span class="dot p2"></span><span class="dot p3"></span></div><div class="face f4"><span class="dot p1"></span><span class="dot p2"></span><span class="dot p3"></span><span class="dot p4"></span></div><div class="face f5"><span class="dot p1"></span><span class="dot p2"></span><span class="dot p3"></span><span class="dot p4"></span><span class="dot p5"></span></div><div class="face f6"><span class="dot p1"></span><span class="dot p2"></span><span class="dot p3"></span><span class="dot p4"></span><span class="dot p5"></span><span class="dot p6"></span></div></div></div>
+                        <span class="hold-tag">HOLD</span>
+                    </div>
+                    <div class="dice-wrapper">
+                        <div class="scene"><div class="cube" id="p2-d2"><div class="face f1"><span class="dot p1"></span></div><div class="face f2"><span class="dot p1"></span><span class="dot p2"></span></div><div class="face f3"><span class="dot p1"></span><span class="dot p2"></span><span class="dot p3"></span></div><div class="face f4"><span class="dot p1"></span><span class="dot p2"></span><span class="dot p3"></span><span class="dot p4"></span></div><div class="face f5"><span class="dot p1"></span><span class="dot p2"></span><span class="dot p3"></span><span class="dot p4"></span><span class="dot p5"></span></div><div class="face f6"><span class="dot p1"></span><span class="dot p2"></span><span class="dot p3"></span><span class="dot p4"></span><span class="dot p5"></span><span class="dot p6"></span></div></div></div>
+                        <span class="hold-tag">HOLD</span>
+                    </div>
+                    <div class="dice-wrapper">
+                        <div class="scene"><div class="cube" id="p2-d3"><div class="face f1"><span class="dot p1"></span></div><div class="face f2"><span class="dot p1"></span><span class="dot p2"></span></div><div class="face f3"><span class="dot p1"></span><span class="dot p2"></span><span class="dot p3"></span></div><div class="face f4"><span class="dot p1"></span><span class="dot p2"></span><span class="dot p3"></span><span class="dot p4"></span></div><div class="face f5"><span class="dot p1"></span><span class="dot p2"></span><span class="dot p3"></span><span class="dot p4"></span><span class="dot p5"></span></div><div class="face f6"><span class="dot p1"></span><span class="dot p2"></span><span class="dot p3"></span><span class="dot p4"></span><span class="dot p5"></span><span class="dot p6"></span></div></div></div>
+                        <span class="hold-tag">HOLD</span>
+                    </div>
+                    <div class="dice-wrapper">
+                        <div class="scene"><div class="cube" id="p2-d4"><div class="face f1"><span class="dot p1"></span></div><div class="face f2"><span class="dot p1"></span><span class="dot p2"></span></div><div class="face f3"><span class="dot p1"></span><span class="dot p2"></span><span class="dot p3"></span></div><div class="face f4"><span class="dot p1"></span><span class="dot p2"></span><span class="dot p3"></span><span class="dot p4"></span></div><div class="face f5"><span class="dot p1"></span><span class="dot p2"></span><span class="dot p3"></span><span class="dot p4"></span><span class="dot p5"></span></div><div class="face f6"><span class="dot p1"></span><span class="dot p2"></span><span class="dot p3"></span><span class="dot p4"></span><span class="dot p5"></span><span class="dot p6"></span></div></div></div>
+                        <span class="hold-tag">HOLD</span>
+                    </div>
+                </div>
+                <div class="rank-result"><span id="p2-rank">-</span> (합: <span id="p2-sum">0</span>)</div>
+            </div>
+        </div>
+
+        <!-- 컨트롤 버튼 영역 -->
+        <div class="controls">
+            <button id="roll-btn" onclick="playTurn()">1차 굴리기</button>
+            <button id="next-btn" onclick="nextRound()" style="display:none;">다음 라운드</button>
+            <button id="charge-btn" onclick="chargeGold()" style="display:none; background-color: #ff9800;">💰 충전</button>
+        </div>
+
+        <div class="result-board">
+            <h2 id="winner-text">배팅액을 정하고 주사위를 굴리세요!</h2>
+        </div>
+    </div>
+
+    <!-- 외부 스크립트 파일 불러오기 구문 -->
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,324 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: #121212;
+    color: #ffffff;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 10px;
+}
+
+.game-container {
+    background-color: #1e1e1e;
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    text-align: center;
+    max-width: 480px;
+    width: 100%;
+}
+
+h1 {
+    font-size: 1.3rem;
+    margin-bottom: 8px;
+    color: #ffca28;
+}
+
+/* 가이드 버튼 & 패널 */
+#guide-toggle-btn {
+    background-color: #333;
+    color: #ffca28;
+    border: 1px solid #ffca28;
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    border-radius: 20px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    width: auto;
+}
+
+.guide-panel {
+    background: #282828;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 12px;
+    text-align: left;
+    font-size: 0.8rem;
+    line-height: 1.4;
+    border: 1px solid #444;
+}
+
+.guide-panel.hidden {
+    display: none;
+}
+
+.guide-panel h3 {
+    font-size: 0.9rem;
+    color: #4caf50;
+    margin: 6px 0 4px 0;
+}
+
+.guide-panel ul, .guide-panel ol {
+    padding-left: 18px;
+}
+
+.highlight-red {
+    color: #ff5252;
+    font-weight: bold;
+}
+
+/* 배팅판 */
+.betting-board {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #2a2a2a;
+    padding: 8px 12px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-size: 0.85rem;
+}
+
+.pot-info {
+    color: #ffd700;
+    font-weight: bold;
+}
+
+.bet-controls input {
+    width: 55px;
+    padding: 2px 4px;
+    font-size: 0.85rem;
+    text-align: center;
+    border-radius: 4px;
+    border: none;
+    outline: none;
+    background: #fff;
+    color: #000;
+}
+
+.status-panel {
+    margin-bottom: 10px;
+    font-size: 0.8rem;
+    color: #ffb74d;
+    font-weight: bold;
+}
+
+/* 플레이어 카드 영역 */
+.players-area {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.player-card {
+    background-color: #2a2a2a;
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.player-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+.player-card h2 {
+    font-size: 0.95rem;
+    color: #e0e0e0;
+}
+
+.gold-text {
+    font-size: 0.85rem;
+    color: #4caf50;
+    font-weight: bold;
+}
+
+/* 승자 강조 */
+.player-card.winner {
+    border: 2px solid #ffd700 !important;
+    background-color: #3b3112 !important;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.6) !important;
+}
+
+/* 주사위 컨테이너 */
+.dice-container {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin: 4px 0;
+}
+
+.dice-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+}
+
+.hold-tag {
+    font-size: 0.65rem;
+    font-weight: bold;
+    color: #ff5252;
+    margin-top: 2px;
+    height: 10px;
+    opacity: 0;
+}
+
+.dice-wrapper.held .hold-tag {
+    opacity: 1;
+}
+
+.dice-wrapper.held .scene {
+    outline: 2px solid #ff5252;
+    border-radius: 6px;
+}
+
+/* 모바일 3D 주사위 (38px 규격) */
+.scene {
+    width: 38px;
+    height: 38px;
+    perspective: 200px;
+}
+
+.cube {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    transform: rotateX(0deg) rotateY(0deg);
+    transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.face {
+    position: absolute;
+    width: 38px;
+    height: 38px;
+    background: #ffffff;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-shadow: inset 0 0 4px rgba(0,0,0,0.15);
+}
+
+.f1 { transform: rotateY(  0deg) translateZ(19px); }
+.f2 { transform: rotateY( 90deg) translateZ(19px); }
+.f3 { transform: rotateX( 90deg) translateZ(19px); }
+.f4 { transform: rotateX(-90deg) translateZ(19px); }
+.f5 { transform: rotateY(-90deg) translateZ(19px); }
+.f6 { transform: rotateY(180deg) translateZ(19px); }
+
+/* 점(Dot) 모바일 좌표배치 */
+.dot {
+    position: absolute;
+    width: 7px;
+    height: 7px;
+    background-color: #333;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.f1 .dot { background-color: #d32f2f; width: 9px; height: 9px; }
+
+.f1 .p1 { top: 50%; left: 50%; }
+
+.f2 .p1 { top: 25%; left: 25%; }
+.f2 .p2 { top: 75%; left: 75%; }
+
+.f3 .p1 { top: 25%; left: 25%; }
+.f3 .p2 { top: 50%; left: 50%; }
+.f3 .p3 { top: 75%; left: 75%; }
+
+.f4 .p1 { top: 25%; left: 25%; }
+.f4 .p2 { top: 25%; left: 75%; }
+.f4 .p3 { top: 75%; left: 25%; }
+.f4 .p4 { top: 75%; left: 75%; }
+
+.f5 .p1 { top: 25%; left: 25%; }
+.f5 .p2 { top: 25%; left: 75%; }
+.f5 .p3 { top: 50%; left: 50%; }
+.f5 .p4 { top: 75%; left: 25%; }
+.f5 .p5 { top: 75%; left: 75%; }
+
+.f6 .p1 { top: 25%; left: 25%; }
+.f6 .p2 { top: 25%; left: 75%; }
+.f6 .p3 { top: 50%; left: 25%; }
+.f6 .p4 { top: 50%; left: 75%; }
+.f6 .p5 { top: 75%; left: 25%; }
+.f6 .p6 { top: 75%; left: 75%; }
+
+/* 주사위 회전 애니메이션 */
+@keyframes rollAnimA {
+    0% { transform: rotateX(0deg) rotateY(0deg); }
+    100% { transform: rotateX(720deg) rotateY(360deg); }
+}
+@keyframes rollAnimB {
+    0% { transform: rotateX(0deg) rotateY(0deg); }
+    100% { transform: rotateX(-360deg) rotateY(720deg); }
+}
+
+.cube.roll-type-A { animation: rollAnimA 0.6s linear infinite; }
+.cube.roll-type-B { animation: rollAnimB 0.6s linear infinite; }
+
+.rank-result {
+    font-size: 0.8rem;
+    color: #bbb;
+    margin-top: 2px;
+}
+
+/* 컨트롤 영역 */
+.controls {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+button {
+    background-color: #2196f3;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    flex: 1;
+}
+
+button:active:not(:disabled) {
+    opacity: 0.8;
+}
+
+button:disabled {
+    background-color: #555;
+    opacity: 0.5;
+}
+
+#next-btn {
+    background-color: #4caf50;
+}
+
+.result-board {
+    background-color: #2a2a2a;
+    padding: 8px;
+    border-radius: 6px;
+    min-height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#winner-text {
+    color: #ffd700;
+    font-size: 0.9rem;
+}
